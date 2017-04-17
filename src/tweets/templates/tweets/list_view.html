@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load recommended %}
+{% block title %} Tweets | Tweetme.co  {% endblock title %}
+
+{% block script %}
+<script>
+
+$(document).ready(function(){
+  loadTweetContainer("tweet-container");
+});
+
+</script>
+{% endblock script %}
+
+
+{% block content %}
+
+  <div class='row'>
+    <div class='col-sm-3 col-xs-12'>
+      <h1>{{ request.user }}</h1>
+      <hr/>
+      <p class='lead'>Recommended Users</p>
+      {% recommended request.user %}
+    </div>
+    <div class='col-sm-9'>
+      {% if not request.GET.q %}
+        <!-- `create_form` and `create_url` are key:pair coming from the TweetListView -->
+          {% include 'tweets/form.html' with form=create_form action_url=create_url btn_title='Tweet' form_class='tweet-form' %}
+          <hr/>
+      {% endif %}
+      <div class='row' id='tweet-container' data-url='/api/tweet/'>
+
+
+      </div>
+      <a href='#' id='loadmore'>Load More Tweets</a>
+    </div>
+  </div>
+
+{% endblock content %}

@@ -1,0 +1,22 @@
+from django import forms
+from django.forms.utils import ErrorList
+
+class FormUserNeededMixin(object):
+
+    def form_valid(self, form):
+        if self.request.user.is_authenticated():
+        # need `instance` of the obj
+            form.instance.user = self.request.user
+            return super(FormUserNeededMixin, self).form_valid(form)
+        else:
+            form._errors[forms.forms.NON_FIELD_ERRORS] = ErrorList(['User must be logged in to continue.'])
+            return self.form_invalid(form) # form_invalid is built-in
+
+class UserOwnerMixin(FormUserNeededMixin, object):
+
+    def form_valid(self,form):
+        if form.instance.user == self.request.user:
+            return super(UserOwnerMixin, self).form_valid(form)
+        else:
+            form._errors[forms.forms.NON_FIELD_ERRORS] = ErrorList(['User not allowed to change data.'])
+            return self.form_invalid(form) # form_invalid is built-in
